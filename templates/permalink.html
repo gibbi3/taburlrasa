@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block content %}
+    {{post.render() | safe}}
+      {% for comments in commentary %}
+        <div class="commentary">
+          <div class="commentary-header">
+            <div class="username">{{comments.username}}</div>
+            <div class="divider">|</div>
+            <div class="date-created">
+              {{comments.created.strftime("%b %d, %Y")}}</div>
+          </div>
+          <br>
+          <article class="comment-body">{{comments.comment}}</article>
+          <br>
+        </div>
+        <div class="comment-option-header">
+          <a class="edit-comment-link" href="/post/comment/edit/{{comments.key().id()}}">Edit</a>
+          <div class="divider">|</div>
+          <a class="delete-comment-link" href="/post/comment/delete/{{comments.key().id()}}">Delete</a>
+        </div>
+        <hr>
+      {% endfor %}
+{% endblock%}

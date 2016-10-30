@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block content %}
+    <div class="menu">
+      <a class="to-post-button" href="/muse">Write New Post</a>
+      <a class="logout" href="/logout">Log Out</a>
+    </div>
+    <br>
+    <hr>
+    <br>
+    {% for poetry in poems %}
+      <div class="poems">
+        <div class="poem-header">
+          <div class="poem-title">{{poetry.title}}</div>
+          <div class="post-info">
+            <div class="date-and-user">
+              <div class="username">{{poetry.username}}</div>
+              <div class="divider">|</div>
+              <div class="date-created">
+                {{poetry.created.strftime("%b %d, %Y")}}</div>
+            </div>
+            <div class="likes">Likes: {{poetry.likes}}</div>
+          </div>
+        </div>
+        <article class="poem-body">{{poetry.poem}}</article>
+        <div class="poems-bottom">
+          <div class="like-unlike">
+            <div class="like-post"><a href="/post/{{poetry.key().id()}}/like">
+              Like Post</a></div>
+            <div class="unlike-post"><a href="/post/{{poetry.key().id()}}/unlike">
+              Un-Like Post</a></div>
+          </div>
+          <div class="link-to-post"><a href="/post/{{poetry.key().id()}}">
+            View Comments</a></div>
+        </div>
+      </div>
+      <hr>
+    {% endfor %}
+    <hr>
+{% endblock %}

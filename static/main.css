@@ -1,0 +1,384 @@
+body {
+  margin: auto;
+  max-width: 960px;
+  width: 80%;
+  font-family: 'Quicksand', sans-serif;
+}
+
+input {
+  width: 100%;
+  height: 30px;
+  font-size: 20px;
+  border-radius: 15px;
+  margin: 10px;
+}
+
+a {
+  text-decoration: none;
+}
+
+.container {
+  width: 100%;
+  display: flex;
+}
+
+.col-6 {
+  width: 50%;
+  padding: 30px;
+  border-radius: 30px;
+  background: beige;
+}
+
+.col-6-marquis {
+  width: 50%;
+  margin-right: 20px;
+  text-align: center;
+}
+
+.login-message {
+  margin-top: 50px;
+}
+
+.form-header {
+  background-color: darkcyan;
+  border-radius: 15px;
+  color: white;
+  width: 80%;
+  margin: auto;
+  margin-bottom: 10px;
+  padding: 10px;
+  font-size: 25px;
+}
+
+.title {
+  font-size: 50px;
+  margin-top: 30px;
+  margin-bottom: auto;
+  text-align: right;
+  background-color: darkcyan;
+  border-radius: 15px;
+  padding-right: 15px;
+  color: white;
+
+}
+
+.menu {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  display: block;
+  margin: auto;
+  font-weight: bold;
+  font-size: 13px;
+}
+
+.to-post-button {
+  border-radius: 15px;
+  border-color: lightsteelblue;
+  color: white;
+  padding: 7px;
+  background: darkcyan;
+  font-weight: bold;
+}
+
+.register {
+  width: 50%;
+  margin: auto;
+}
+
+.login {
+  margin-left: 18px;
+  color: black;
+}
+
+.logout {
+  color: black;
+  margin-left: 20px;
+}
+
+.register-link {
+  margin-left: 18px;
+  color: black;
+}
+
+.poems {
+  margin-bottom: 15px;
+  width: 100%;
+  overflow: auto;
+}
+
+.poem-header {
+  margin-bottom: 15px;
+}
+
+.post-info {
+  display: flex;
+  width: 100%;
+}
+
+.poem-body {
+  margin-bottom: 10px;
+  font-family: 'Quicksand', sans-serif;
+  background-color: beige;
+  padding: 25px;
+  border-radius: 10px;
+}
+
+.poem-textbox {
+  width: 80%;
+  height: 400px;
+  font-size: 17px;
+}
+
+.poem-title {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  width: 100%;
+}
+
+.poem-form {
+  text-align: center;
+}
+
+.date-and-user {
+  display: flex;
+  width: 50%;
+  text-align: left;
+  margin-bottom: 15px;
+}
+
+.likes {
+  width: 50%;
+  text-align: right;
+}
+
+.commentary-header {
+  display: flex;
+}
+
+.comment-option-header {
+  display: flex;
+}
+
+.divider {
+  margin-right: 5px;
+  margin-left: 5px;
+}
+
+.title-input {
+  margin-bottom: 10px;
+  width: 80%;
+}
+
+.sign-in-button {
+  height: 50px;
+  float: right;
+}
+
+.poems-bottom {
+  display: flex;
+}
+
+.like-unlike {
+  width: 50%;
+}
+
+.link-to-post {
+  text-align: right;
+  margin-bottom: 3px;
+  width: 50%;
+}
+
+.like-post {
+  font-size: 15px;
+  text-align: left;
+  margin-bottom: 3px;
+}
+
+.unlike-post {
+  font-size: 12px;
+  text-aligh: left;
+  margin-bottom: 3px;
+}
+
+.post-links {
+  text-align: right;
+}
+
+.submit-button {
+  width: 300px;
+  height: 50px;
+  font-family: 'Quicksand', sans-serif;
+  font-weight: bold;
+  border-radius: 15px;
+  background-color: darkcyan;
+  color: white;
+}
+
+.error {
+  margin-top: 15px;
+  color: red;
+}
+
+.error-username {
+  color: red;
+}
+
+.error-page-message {
+  font-size: 50px;
+  color: red;
+  text-align: center;
+  margin: auto;
+}
+
+.welcome-body {
+  text-align: center;
+}
+
+.home-link {
+  color: blue;
+  font-size: 20px;
+  font-weight: bold;
+  text-align: center;
+}
+
+.login-page-header {
+  display: flex;
+}
+
+.login-link {
+  text-align: left;
+  margin-top: 0;
+  margin-bottom: 10px;
+  width: 50%;
+}
+
+.reg-login-link {
+  text-align: right;
+  margin-top: 10px;
+  margin-bottom: 0;
+  width: 50%;
+  font-size: 30px;
+}
+
+.cancel-container {
+  margin: auto;
+  text-align: center;
+  padding:30px;
+}
+
+.error {
+  text-align: center;
+  margin: 20px;
+}
+
+
+@media only screen and (max-width: 500px) {
+
+  .container {
+    flex-direction: column;
+  }
+
+  .col-6 {
+    width: 100%;
+    order: -1;
+    padding: 0;
+    background: 0;
+  }
+
+  .sign-in-button {
+    float: 0;
+    width: 100%;
+    margin: auto;
+  }
+
+  .col-6-marquis {
+    width: 100%;
+    border-right: none;
+  }
+
+  .title {
+    font-size: 35px;
+    text-align: center;
+  }
+
+  .to-post-button {
+    font-size: 14px;
+    margin-bottom: 1em;
+  }
+
+  .menu {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .register {
+    width: 100%;
+  }
+
+  .login-link {
+    margin: auto;
+    text-align: center;
+  }
+
+  .login {
+    margin-left: 0;
+    margin-bottom: 1em;
+    color: black;
+  }
+
+  .logout {
+    margin-left: 0;
+    color: black;
+  }
+
+  .register-link {
+    margin-left: 0;
+    margin-bottom: 1em;
+    color: black;
+  }
+
+  .poem-header {
+    margin-bottom: 0;
+  }
+
+  .poem-title {
+    font-size: 20px;
+  }
+
+  .date-created {
+    font-size: 15px;
+  }
+
+  .poem-textbox {
+    width: 100%;
+    min-height: 250px;
+    height: auto;
+  }
+
+  .submit-button {
+    margin: auto;
+  }
+
+  .poems-bottom {
+    font-size: 14px;
+  }
+
+  .like-post {
+    margin-bottom: 1em;
+  }
+
+  .date-and-user{
+    font-size: 14px;
+  }
+
+  .error-page-message {
+    font-size: 20px;
+  }
+
+  .error {
+    color: red;
+    font-size: 30px;
+  }
+}

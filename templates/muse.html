@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block content %}
+    <hr>
+    <form class="poem-form" method="post">
+      <label>
+        <h3 class="form-header">Title</h3>
+        <input class="title-input" type="text" name="title" value={{title}}>
+      </label>
+      <br>
+      <label>
+        <h3 class="form-header">Tabula</h3>
+        <textarea class="poem-textbox" name="poem">{{poem}}</textarea>
+      </label>
+      <div class="error">{{error}}</div>
+      <br>
+      <input class="submit-button" type="submit">
+      <br>
+    </form>
+    <div class="cancel-container">
+      <a class="cancel" href="/">Cancel</a>
+    </div>
+{% endblock %}

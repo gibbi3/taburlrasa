@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block content %}
+    <div class=login-page-header>
+      <h2 class="login-link">Welcome!</h2>
+    </div>
+    <hr>
+    <div class="container">
+      <div class="col-6-marquis">
+        <h4 class="login-message">
+          First time here?
+        </h4>
+        <a class=reg-login-link href="/register">Click here to register!</a>
+      </div>
+        <div class="col-6">
+          <form method="post">
+            <table>
+              <tr class="username-field">
+                <td class="label">
+                  Username
+                </td>
+                <td>
+                  <input type="text" name="username" value="{{username}}">
+                </td>
+              </tr>
+
+              <tr>
+                <td class="label">
+                  Password
+                </td>
+                <td>
+                  <input type="password" name="password" value={{password}}>
+                </td>
+              </tr>
+            </table>
+            <div class="sign-in-button-cont">
+              <input class="sign-in-button" type="submit" value="Sign In">
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="error">
+        <a href="/register" class="error-username" tabindex="-1">{{error_username}}</a>
+      </div>
+      <div class="error">
+        {{error}}
+      </div>
+{% endblock %}

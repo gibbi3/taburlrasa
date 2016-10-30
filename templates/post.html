@@ -1,0 +1,25 @@
+<div class="post">
+  <div class="post-heading">
+    <div class="poem-title">
+      {{p.title}}
+    </div>
+      <div class="post-info">
+        <div class="date-and-user">
+          <div class="username">{{p.username}}</div>
+          <div class="divider">|</div>
+          <div class="date-created">
+            {{p.created.strftime("%b %d, %Y")}}</div>
+        </div>
+        <div class="likes">Likes: {{p.likes}}</div>
+      </div>
+    </div>
+  </div>
+  <article class="poem-body">
+    {{p._render_text | safe}}
+  </article>
+  <div class="post-links">
+    <div class="edit-link"><a href="/post/edit/{{p.key().id()}}">Edit</a></div>
+    <div class="delete-link"><a href="/post/delete/{{p.key().id()}}">Delete</a></div>
+    <div class="comment-link"><a href="/post/comment/{{p.key().id()}}">Comment</a></div>
+  </div>
+</div>

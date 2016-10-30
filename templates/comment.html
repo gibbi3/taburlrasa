@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block content %}
+    <form class="poem-form" method="post">
+      <br>
+      <label>
+        <h3 class="form-header">Comment</h3>
+        <textarea class="poem-textbox" name="comment">{{comment}}</textarea>
+      </label>
+      <br>
+      <input class="submit-button" type="submit">
+      <br>
+    </form>
+    <div class="cancel-container">
+      <a class="cancel" href="/post/{{post.key().id()}}">Cancel</a>
+    </div>
+{% endblock %}

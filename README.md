@@ -14,4 +14,5 @@ an app registered on The AppEngine site before deployment.
 Use:
 
 The site should be accessible through many (if not all) browsers. URLs can be
-set in the file title "main.py", at the bottom of the file. 
+set in the file title "main.py", at the bottom of the file.
+The site can currently be reached at "taburlrasa.appspot.com".

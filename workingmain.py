@@ -8,9 +8,6 @@ import webapp2
 import jinja2
 
 from google.appengine.ext import db
-from models.poetry import Poetry
-from models.user import User
-from models.comments import Comments
 
 #Jinja2 configuration.
 
@@ -47,6 +44,8 @@ class Handler(webapp2.RequestHandler):
     def render(self, template, **kw):
         self.write(self.render_str(template, **kw))
 
+# Clears cookie.
+
     def logout(self):
         self.response.headers.add_header(
         'set-cookie', 'user_id=; Path=/')
@@ -58,6 +57,7 @@ class Handler(webapp2.RequestHandler):
             '%s=%s; Path=/' % (name, cookie_val))
 
 # Verifies existence of necessary encoded cookie for site usage.
+
 def read_secure_cookie(self, name):
     cookie_val = self.request.cookies.get(name)
     return cookie_val and check_secure_val(cookie_val)
@@ -101,6 +101,33 @@ def make_hash(name, pw, salt = None):
 def valid_pw(name, password, h):
     salt = h.split(',')[0]
     return h == make_hash(name, password, salt)
+
+# Database models and the attributes found in each entity.
+
+class Poetry(db.Model):
+    title = db.StringProperty(required = True)
+    poem = db.TextProperty(required = True)
+    created = db.DateTimeProperty(auto_now_add = True)
+    writer = db.StringProperty(required = True)
+    username = db.StringProperty(required = True)
+    likes = db.IntegerProperty(required = True)
+    likers = db.ListProperty(str)
+
+    def render(self):
+        self._render_text = self.poem.replace('\n', '<br>')
+        return render_str("post.html", p = self)
+
+class User(db.Model):
+    username = db.StringProperty(required = True)
+    password = db.StringProperty(required = True)
+    email = db.StringProperty()
+
+class Comments(db.Model):
+    comment = db.TextProperty(required = True)
+    username = db.StringProperty(required = True)
+    writer = db.StringProperty(required = True)
+    post_id = db.IntegerProperty(required = True)
+    created = db.DateTimeProperty(auto_now_add = True)
 
 #Checking for the validity of entries for usernames, passwords, and emails.
 
@@ -199,14 +226,17 @@ class PostPage(Handler):
     def get(self, post_id):
         key = db.Key.from_path('Poetry', int(post_id), parent=post_key())
         post = db.get(key)
-        if post:
-            commentary = db.GqlQuery("SELECT * FROM Comments WHERE post_id =:1 "
-                                     " ORDER BY created ASC", post.key().id())
-            self.render("post.html", post = post, commentary = commentary)
-        else:
-            self.render("errorexist.html")
+
+# This query searches all comments and returns those belonging to the given post.
+
+        commentary = db.GqlQuery("SELECT * FROM Comments WHERE post_id =:1 ORDER BY created ASC", post.key().id())
+        if not post:
+            self.response.out.write("Post does not exist.")
+
+        self.render("permalink.html", post = post, commentary = commentary)
 
 class Muse(Handler):
+
     def get(self):
         cookie = read_secure_cookie(self, 'user_id')
         if cookie:
@@ -234,151 +264,115 @@ class EditPost(Handler):
     def get(self, post_id):
         key = db.Key.from_path('Poetry', int(post_id), parent=post_key())
         post_to_edit = db.get(key)
-        if post_to_edit:
-            cookie = self.request.cookies.get('user_id')
-            if cookie:
-                if post_to_edit.writer == retrieve_username_hash(self,
-                                                                'user_id'):
-                    self.render("edit.html", title = post_to_edit.title,
-                                             poem = post_to_edit.poem,
-                                             post = post_to_edit)
-                else:
-                    self.render("errorpost.html")
+        cookie = self.request.cookies.get('user_id')
+        if cookie:
+            if post_to_edit.writer == retrieve_username_hash(self, 'user_id'):
+                self.render("edit.html", title = post_to_edit.title,
+                                         poem = post_to_edit.poem,
+                                         post = post_to_edit)
             else:
-                self.redirect("/login")
+                self.render("errorpost.html")
         else:
-            self.render("errorexist.html")
+            self.redirect("/login")
 
     def post(self, post_id):
         edited_title = self.request.get("title")
         edited_poem = self.request.get("poem")
-        key = db.Key.from_path('Poetry', int(post_id), parent=post_key())
-        post_to_edit = db.get(key)
+
         if edited_title and edited_poem:
-            cookie = self.request.cookies.get('user_id')
-            if cookie:
-                if post_to_edit.writer == retrieve_username_hash(self,
-                                                                'user_id'):
-                    key = db.Key.from_path('Poetry', int(post_id),
-                                           parent=post_key())
-                    post_to_edit = db.get(key)
-                    post_to_edit.title = edited_title
-                    post_to_edit.poem = edited_poem
-                    post_to_edit.put()
-                    self.redirect('/post/%s' % str(post_to_edit.key().id()))
-                else:
-                    self.render("errorpost.html")
-            else:
-                self.redirect("/login")
-        else:
-            self.render("errorexist.html")
+            key = db.Key.from_path('Poetry', int(post_id), parent=post_key())
+            post_to_edit = db.get(key)
+            post_to_edit.title = edited_title
+            post_to_edit.poem = edited_poem
+            post_to_edit.put()
+            self.redirect('/post/%s' % str(post_to_edit.key().id()))
 
 
 class DeletePost(Handler):
     def get(self, post_id):
         key = db.Key.from_path('Poetry', int(post_id), parent=post_key())
-        post = db.get(key)
-        if post:
-            cookie = self.request.cookies.get('user_id')
-            if cookie:
-                if post.writer == retrieve_username_hash(self, 'user_id'):
-                    post.delete()
-                    self.redirect("/")
-                else:
-                    self.render("errordelete.html")
+        post_to_delete = db.get(key)
+        cookie = self.request.cookies.get('user_id')
+        if cookie:
+            if post_to_delete.writer == retrieve_username_hash(self, 'user_id'):
+                post_to_delete.delete()
+                self.redirect("/")
             else:
-                self.redirect("/login")
+                self.render("errordelete.html")
         else:
-            self.render("errorexist.html")
+            self.redirect("/login")
 
 class Comment(Handler):
     def get(self, post_id):
-        key = db.Key.from_path('Poetry', int(post_id), parent=post_key())
-        post = db.get(key)
-        if post:
-            cookie = read_secure_cookie(self, 'user_id')
-            if cookie:
-                self.render("comment.html", post=post)
-            else:
-                self.redirect('/login')
-
-    def post(self, post_id):
+        cookie = read_secure_cookie(self, 'user_id')
+        if cookie:
             key = db.Key.from_path('Poetry', int(post_id), parent=post_key())
             post = db.get(key)
-            if post:
-                comment = self.request.get("comment")
-                if comment:
-                    c = Comments(username = retrieve_username(self, 'user_id'),
-                                 writer = retrieve_username_hash(self,
-                                                                 'user_id'),
-                                 comment = comment,
-                                 post_id=post.key().id())
-                    c.put()
-                    self.redirect('/post/%s' % str(post.key().id()))
-                else:
-                    key = db.Key.from_path('Poetry', int(post_id),
-                                           parent=post_key())
-                    post = db.get(key)
-                    self.redirect('/post/%s' % str(post.key().id()))
-            else:
-                self.render("errorexist.html")
+            self.render("comment.html", post=post)
+        else:
+            self.redirect('/login')
 
+    def post(self, post_id):
+            comment = self.request.get("comment")
+
+            if comment:
+                key = db.Key.from_path('Poetry', int(post_id),
+                                                 parent=post_key())
+                post = db.get(key)
+                c = Comments(username = retrieve_username(self, 'user_id'),
+                    writer = retrieve_username_hash(self, 'user_id'),
+                    comment = comment,
+                    post_id=post.key().id())
+                c.put()
+                self.redirect('/post/%s' % str(post.key().id()))
+            else:
+                key = db.Key.from_path('Poetry',
+                    int(post_id),
+                    parent=post_key())
+                post = db.get(key)
+                self.redirect('/post/%s' % str(post.key().id()))
 
 class EditComment(Handler):
     def get(self, post_id):
         key = db.Key.from_path('Comments', int(post_id))
-        comment = db.get(key)
-        if comment:
-            cookie = self.request.cookies.get('user_id')
-            if cookie:
-                if comment.writer == retrieve_username_hash(self, 'user_id'):
-                    self.render("edit-comment.html",
-                    resident_post = int(comment.post_id))
-                else:
-                    self.render("errorpost.html")
+        comment_to_edit = db.get(key)
+        cookie = self.request.cookies.get('user_id')
+        if cookie:
+            if comment_to_edit.writer == retrieve_username_hash(self,
+                                                                'user_id'):
+                self.render("edit-comment.html",
+                resident_post = int(comment_to_edit.post_id))
             else:
-                self.redirect("/login")
+                self.render("errorpost.html")
         else:
-            self.render("errorexist.html")
+            self.redirect("/login")
 
     def post(self, post_id):
-        key = db.Key.from_path('Comments', int(post_id))
-        comment = db.get(key)
-        if comment:
-            cookie = self.request.cookies.get('user_id')
-            if cookie:
-                if comment.writer == retrieve_username_hash(self, 'user_id'):
-                    edited_comment = self.request.get("comment")
-                    if edited_comment:
-                        key = db.Key.from_path('Comments', int(post_id))
-                        comment = db.get(key)
-                        comment.comment = edited_comment
-                        comment.put()
-                        self.redirect("/post/%s" % str(comment.post_id))
-                    else:
-                        self.redirect("/post/%s" % str(comment.post_id))
-                else:
-                    self.render("errorpost.html")
-            else:
-                self.redirect("/login")
-        else:
-            self.render("errorexist.html")
+        edited_comment = self.request.get("comment")
 
+        if edited_comment:
+            key = db.Key.from_path('Comments', int(post_id))
+            comment_to_edit = db.get(key)
+            comment_to_edit.comment = edited_comment
+            comment_to_edit.put()
+            self.redirect("/post/%s" % str(comment_to_edit.post_id))
+        else:
+            self.redirect("/post/%s" % str(comment_to_edit.post_id))
 
 class DeleteComment(Handler):
     def get(self, post_id):
         key = db.Key.from_path('Comments', int(post_id))
-        comment = db.get(key)
-        if comment:
-            cookie = self.request.cookies.get('user_id')
-            if cookie:
-                if comment.writer == retrieve_username_hash(self, 'user_id'):
-                    comment.delete()
-                    self.redirect("/post/%s" % str(comment.post_id))
-                else:
-                    self.render("errordelete.html")
+        comment_to_delete = db.get(key)
+        cookie = self.request.cookies.get('user_id')
+        if cookie:
+            if comment_to_delete.writer == retrieve_username_hash(self,
+                                                                  'user_id'):
+                comment_to_delete.delete()
+                self.redirect("/post/%s" % str(comment_to_delete.post_id))
             else:
-                self.redirect("/login")
+                self.render("errordelete.html")
+        else:
+            self.redirect("/login")
 
 
 class Like(Handler):
@@ -393,7 +387,7 @@ class Like(Handler):
                     post.likes += 1
                     post.likers.append(retrieve_username(self, 'user_id'))
                     post.put()
-                    self.redirect("/post/%s" % str(post.key().id()))
+                    self.redirect("/")
                 else:
                     self.response.out.write("Post not found.")
             elif liker == post.username:

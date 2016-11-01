@@ -12,7 +12,7 @@ class EditComment(Handler):
             cookie = self.request.cookies.get('user_id')
             if cookie:
                 if comment.writer == retrieve_username_hash(self, 'user_id'):
-                    self.render("edit-comment.html",
+                    self.render("edit-comment.html", comment=comment.comment,
                     resident_post = int(comment.post_id))
                 else:
                     self.render("errorpost.html")
@@ -30,8 +30,6 @@ class EditComment(Handler):
                 if comment.writer == retrieve_username_hash(self, 'user_id'):
                     edited_comment = self.request.get("comment")
                     if edited_comment:
-                        key = db.Key.from_path('Comments', int(post_id))
-                        comment = db.get(key)
                         comment.comment = edited_comment
                         comment.put()
                         self.redirect("/post/%s" % str(comment.post_id))
